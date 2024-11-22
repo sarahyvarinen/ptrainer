@@ -1,12 +1,18 @@
 import React from 'react';
-import CustomerList from './components/CustomerList';  // Oletan, että komponentti on tässä kansiossa
+import CustomerList from './components/CustomerList';  // Asiakaslista-komponentti
+import TrainingList from './components/TrainingList';  // Harjoituslista-komponentti
 
 const App = () => {
   return (
     <div>
       <h1>Personal Trainer App</h1>
+      {/* Asiakaslista */}
       <CustomerList />
-    </div>
+
+      {/* Harjoituslista */}
+      <TrainingList />
+
+     </div>
   );
 };
 

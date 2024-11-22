@@ -20,10 +20,11 @@ export default function PersonalTrainer() {
     ]);
 
     const [trainingColDefs, setTrainingColDefs] = useState([
-        { field: 'name' },
-        { field: 'duration' },
-        { field: 'intensity' },
-        { field: 'date' }
+        { field: 'customer.firstname', headerName: 'First Name' }, // Asiakkaan etunimi
+        { field: 'customer.lastname', headerName: 'Last Name' },   // Asiakkaan sukunimi
+        { field: 'duration', headerName: 'Duration' },
+        { field: 'activity', headerName: 'Activity' },
+        { field: 'date', headerName: 'Date' }
     ]);
 
     // Funktio asiakkaiden hakemiseen
@@ -39,9 +40,9 @@ export default function PersonalTrainer() {
 
     // Funktio harjoitusten hakemiseen
     const getTrainings = () => {
-        fetch('https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/trainings')
+        fetch('https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/gettrainings')
             .then(response => response.json())
-            .then(data => setTrainings(data._embedded.trainings))
+            .then(data => setTrainings(data))  // Päivitetään trainings suoraan saaduilla tiedoilla
             .catch(() => {
                 setOpenSnackbar(true);
                 setMsg("Harjoitusten haku epäonnistui");
