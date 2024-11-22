@@ -42,10 +42,10 @@ export default function PersonalTrainer() {
     const getTrainings = () => {
         fetch('https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/gettrainings')
             .then(response => response.json())
-            .then(data => setTrainings(data))  // Päivitetään trainings suoraan saaduilla tiedoilla
+            .then(data => setTrainings(data))  
             .catch(() => {
                 setOpenSnackbar(true);
-                setMsg("Harjoitusten haku epäonnistui");
+                setMsg("Harjoitusten haku epäonnistui, yritä uudelleen");
             });
     };
 

@@ -4,8 +4,8 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(0, 0, 0, 0.87); /* Tummempi teksti vaalealla taustalla */
-  background-color: #ffffff; /* Valkoinen tausta */
+  color: rgba(0, 0, 0, 0.87); 
+  background-color: #ffffff; 
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -15,11 +15,11 @@
 
 a {
   font-weight: 500;
-  color: #007bff; /* Vaaleansininen linkki */
+  color: #007bff; 
   text-decoration: inherit;
 }
 a:hover {
-  color: #0056b3; /* Tumma sininen hover-efekti */
+  color: #0056b3; 
 }
 
 body {
@@ -29,13 +29,13 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #ffffff; /* Valkoinen tausta */
+  background-color: #ffffff; 
 }
 
 h1 {
   font-size: 2.5em;
   line-height: 1.2;
-  color: #333333; /* Tummanharmaa pääotsikko */
+  color: #333333; 
 }
 
 button {
@@ -45,14 +45,14 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #f0f0f0; /* Vaaleanharmaa tausta */
-  color: #333333; /* Tumma teksti */
+  background-color: #f0f0f0; 
+  color: #333333; 
   cursor: pointer;
   transition: border-color 0.25s, background-color 0.25s;
 }
 button:hover {
-  background-color: #e0e0e0; /* Vaaleanharmaan taustan tummeneminen hoverissa */
-  border-color: #007bff; /* Sininen reunus hoverissa */
+  background-color: #e0e0e0; 
+  border-color: #007bff; 
 }
 button:focus,
 button:focus-visible {
@@ -60,21 +60,20 @@ button:focus-visible {
 }
 
 nav {
-  background-color: #add8e6; /* Vaaleansininen yläpalkki */
-  padding: 1em;
+  background-color: #add8e6; 
   width: 100%;
   box-sizing: border-box;
 }
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547; /* Tummanharmaa teksti vaalealla taustalla */
-    background-color: #ffffff; /* Valkoinen tausta */
+    color: #213547; 
+    background-color: #ffffff; 
   }
   a:hover {
-    color: #0056b3; /* Sininen hover-efekti */
+    color: #0056b3; 
   }
   button {
-    background-color: #f9f9f9; /* Vaaleanharmaa tausta */
+    background-color: #f9f9f9; 
   }
 }

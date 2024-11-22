@@ -14,17 +14,17 @@ const TrainingList = () => {
     { field: "duration", headerName: "Kesto (min)", width: 150 },
   ];
 
-  // Hae data käyttäen fetch-APIa
+  // Hakee datan fetchillä
   useEffect(() => {
     const fetchTrainings = async () => {
       try {
         const response = await fetch("https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/gettrainings");
         if (!response.ok) {
-          throw new Error("Dataa ei voitu hakea: " + response.status);
+          throw new Error("Virhe hakiessa dataa, yritä uudelleen: " + response.status);
         }
         const data = await response.json();
 
-        // Muokkaa data DataGridin ymmärtämään muotoon
+        // Ymmärrettävä muoto
         const formattedData = data.map((training) => ({
           id: training.id,
           activity: training.activity,
