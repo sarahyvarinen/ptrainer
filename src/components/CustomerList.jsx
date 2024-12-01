@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-material.css";
 import { Snackbar, Tabs, Tab, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
-import Papa from "papaparse";  // Tuodaan papaparse CSV-vientiin
+import Papa from "papaparse";  // CSV vienti
+import Statistics from "./Statistics"; // Tuo tilastokomponentti
 
 export default function PersonalTrainer() {
     const [customers, setCustomers] = useState([]);
@@ -12,7 +13,7 @@ export default function PersonalTrainer() {
     const [msg, setMsg] = useState("");
     const [tabIndex, setTabIndex] = useState(0);
     const [editCustomer, setEditCustomer] = useState(null); // Tämä on muokkaustilassa olevan asiakkaan tiedot
-    const [openDialog, setOpenDialog] = useState(false); // Tämä hallitsee popup-ikkunan tilaa
+    const [openDialog, setOpenDialog] = useState(false); // Tämä hallitsee popup-ikkunaa
 
     const [customerColDefs, setCustomerColDefs] = useState([
         { field: 'firstname' },
@@ -22,7 +23,7 @@ export default function PersonalTrainer() {
         {
             headerName: "Toiminnot",
             field: "actions",
-            sortable: false,  // Estetään lajittelu
+            sortable: false,
             cellRenderer: (params) => {
                 return (
                     <div style={{ display: 'flex', gap: '10px' }}>
@@ -36,14 +37,14 @@ export default function PersonalTrainer() {
                         <Button
                             variant="contained"
                             color="primary"
-                            onClick={() => openEditDialog(params.data)} // Avaa muokkausdialogi
+                            onClick={() => openEditDialog(params.data)} // Avaa muokkaus
                         >
                             Muokkaa
                         </Button>
                     </div>
                 );
             },
-            suppressFiltersToolPanel: true,  // Estää suodattimen työkalupaneelin
+            suppressFiltersToolPanel: true,
         }
     ]);
 
@@ -55,29 +56,26 @@ export default function PersonalTrainer() {
         { field: 'date', headerName: 'Date' }
     ]);
 
-    // Asiakkaiden hakeminen
     const getCustomers = () => {
-        fetch('https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/customers')
-            .then(response => response.json())
-            .then(data => setCustomers(data._embedded.customers))
+        fetch("https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/customers")
+            .then((response) => response.json())
+            .then((data) => setCustomers(data._embedded.customers))
             .catch(() => {
                 setOpenSnackbar(true);
                 setMsg("Asiakkaiden haku epäonnistui");
             });
     };
 
-    // Harjoitusten hakeminen
     const getTrainings = () => {
-        fetch('https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/gettrainings')
-            .then(response => response.json())
-            .then(data => setTrainings(data))
+        fetch("https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/gettrainings")
+            .then((response) => response.json())
+            .then((data) => setTrainings(data))
             .catch(() => {
                 setOpenSnackbar(true);
-                setMsg("Harjoitusten haku epäonnistui, yritä uudelleen");
+                setMsg("Harjoitusten haku epäonnistui");
             });
     };
 
-    // Asiakkaan poisto
     const handleDelete = (customerUrl) => {
         if (window.confirm("Oletko varma, että haluat poistaa tämän asiakkaan?")) {
             fetch(customerUrl, { method: 'DELETE' })
@@ -95,7 +93,6 @@ export default function PersonalTrainer() {
         }
     };
 
-    // Avaa muokkausdialogi
     const openEditDialog = (customerData) => {
         setEditCustomer(customerData); // Asettaa muokattavan asiakkaan tiedot
         setOpenDialog(true); // Avaa dialogin
@@ -106,7 +103,6 @@ export default function PersonalTrainer() {
         setEditCustomer(null); // Tyhjentää muokattavan asiakkaan tiedot
     };
 
-    // Tallenna asiakas
     const handleSave = () => {
         if (editCustomer) {
             const updatedCustomer = { ...editCustomer };
@@ -130,14 +126,11 @@ export default function PersonalTrainer() {
         }
     };
 
-    // Tab-valinta
     const handleTabChange = (event, newIndex) => {
         setTabIndex(newIndex);
     };
 
-    // CSV-vienti
     const exportToCSV = () => {
-        // Muodostetaan asiakastiedot CSV:ksi
         const formattedData = customers.map((customer) => ({
             etunimi: customer.firstname,
             sukunimi: customer.lastname,
@@ -145,10 +138,7 @@ export default function PersonalTrainer() {
             puhelinnumero: customer.phone,
         }));
 
-        // Käytetään PapaParse:ia tiedoston luomiseen
         const csv = Papa.unparse(formattedData);
-
-        // Luodaan linkki ja ladataan tiedosto
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
@@ -172,10 +162,10 @@ export default function PersonalTrainer() {
                 >
                     <Tab label="Asiakkaat" />
                     <Tab label="Harjoitukset" />
+                    <Tab label="Tilastot" />
                 </Tabs>
             </Box>
 
-            {/* CSV-vienti-painike */}
             <Button variant="contained" color="primary" onClick={exportToCSV} style={{ marginBottom: '20px' }}>
                 Vie asiakastiedot CSV:ksi
             </Button>
@@ -204,6 +194,7 @@ export default function PersonalTrainer() {
                         />
                     </>
                 )}
+                {tabIndex === 2 && <Statistics trainings={trainings} />} 
                 <Snackbar
                     open={openSnackbar}
                     message={msg}

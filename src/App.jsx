@@ -23,7 +23,7 @@ const App = () => {
                 <button onClick={() => setCurrentPage('calendar')}>Kalenteri</button>
             </div>
 
-            {/* Sivujen renderöinti */}
+            {/* Sivujen renderöinti, tässä oli ongelma jonka olen avannut word tiedostossa jonka palautin*/}
             {currentPage === 'customers' && <CustomerList />}
             {currentPage === 'trainings' && <TrainingList />}
             {currentPage === 'addCustomer' && (
@@ -32,7 +32,7 @@ const App = () => {
                     navigateToCustomers={() => setCurrentPage('customers')} 
                 />
             )}
-            {currentPage === 'calendar' && <TrainingCalendar />} {/* Kalenteri renderöidään */}
+            {currentPage === 'calendar' && <TrainingCalendar />} {/* Kalenteri */}
         </div>
     );
 };

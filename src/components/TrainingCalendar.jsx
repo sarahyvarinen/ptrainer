@@ -3,7 +3,7 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { format } from 'date-fns'; // Käytämme date-fns kirjastoa päivämäärien muotoiluun
+import { format } from 'date-fns'; // date fns muotoiluun
 
 const TrainingCalendar = () => {
   const [trainings, setTrainings] = useState([]);
@@ -18,7 +18,7 @@ const TrainingCalendar = () => {
         }
         const data = await response.json();
 
-        // Muodostetaan kalenteritiedot
+        // kalenteritiedot
         const events = data._embedded.trainings.map(training => ({
           title: training.activity,
           start: format(new Date(training.date), "yyyy-MM-dd'T'HH:mm:ss"),

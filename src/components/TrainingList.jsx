@@ -55,7 +55,7 @@ const TrainingList = () => {
       <DataGrid
         rows={trainings}
         columns={columns}
-        pageSize={5} // Voit määrittää rivejä per sivu
+        pageSize={5} 
         loading={loading}
         rowsPerPageOptions={[5, 10, 20]} // Sivutuksen vaihtoehdot
       />
