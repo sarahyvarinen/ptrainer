@@ -2,15 +2,16 @@ import { useEffect, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-material.css";
-import { Snackbar, Tabs, Tab, Box, Button } from "@mui/material";
+import { Snackbar, Tabs, Tab, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
 
 export default function PersonalTrainer() {
-
     const [customers, setCustomers] = useState([]);
     const [trainings, setTrainings] = useState([]);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [msg, setMsg] = useState("");
     const [tabIndex, setTabIndex] = useState(0);
+    const [editCustomer, setEditCustomer] = useState(null); // Tämä on muokkaustilassa olevan asiakkaan tiedot
+    const [openDialog, setOpenDialog] = useState(false); // Tämä hallitsee popup-ikkunan tilaa
 
     const [customerColDefs, setCustomerColDefs] = useState([
         { field: 'firstname' },
@@ -18,22 +19,30 @@ export default function PersonalTrainer() {
         { field: 'email' },
         { field: 'phone' },
         {
-            headerName: "Toiminnot", 
+            headerName: "Toiminnot",
             field: "actions",
-            // Käytämme cellRendereriä ja palautamme buttonin renderöitäväksi soluun
+            sortable: false,  // Estetään lajittelu
             cellRenderer: (params) => {
                 return (
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        onClick={() => handleDelete(params.data._links.self.href)}
-                    >
-                        Poista
-                    </Button>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            onClick={() => handleDelete(params.data._links.self.href)}
+                        >
+                            Poista
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => openEditDialog(params.data)} // Avaa muokkausdialogi
+                        >
+                            Muokkaa
+                        </Button>
+                    </div>
                 );
             },
             suppressFiltersToolPanel: true,  // Estää suodattimen työkalupaneelin
-            suppressSorting: true,  // Estää lajittelua
         }
     ]);
 
@@ -45,7 +54,6 @@ export default function PersonalTrainer() {
         { field: 'date', headerName: 'Date' }
     ]);
 
-    // Funktio asiakkaiden hakemiseen
     const getCustomers = () => {
         fetch('https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/customers')
             .then(response => response.json())
@@ -56,7 +64,6 @@ export default function PersonalTrainer() {
             });
     };
 
-    // Funktio harjoitusten hakemiseen
     const getTrainings = () => {
         fetch('https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/gettrainings')
             .then(response => response.json())
@@ -67,11 +74,8 @@ export default function PersonalTrainer() {
             });
     };
 
-    // Funktio asiakkaan poistamiseen
     const handleDelete = (customerUrl) => {
-        // Näyttää vahvistusdialogin
-        const isConfirmed = window.confirm("Oletko varma, että haluat poistaa tämän asiakkaan?");
-        if (isConfirmed) {
+        if (window.confirm("Oletko varma, että haluat poistaa tämän asiakkaan?")) {
             fetch(customerUrl, { method: 'DELETE' })
                 .then(response => {
                     if (response.ok) {
@@ -83,6 +87,40 @@ export default function PersonalTrainer() {
                 .catch(err => {
                     console.error(err);
                     alert("Poisto epäonnistui");
+                });
+        }
+    };
+
+    const openEditDialog = (customerData) => {
+        setEditCustomer(customerData); // Asettaa muokattavan asiakkaan tiedot
+        setOpenDialog(true); // Avaa dialogin
+    };
+
+    const handleDialogClose = () => {
+        setOpenDialog(false); // Sulkee dialogin
+        setEditCustomer(null); // Tyhjentää muokattavan asiakkaan tiedot
+    };
+
+    const handleSave = () => {
+        // Lähetä muokatut tiedot palvelimelle (esimerkiksi PUT-pyyntö)
+        if (editCustomer) {
+            const updatedCustomer = { ...editCustomer };
+            fetch(editCustomer._links.self.href, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedCustomer),
+            })
+                .then(response => {
+                    if (response.ok) {
+                        getCustomers(); // Päivittää asiakaslistan tallennuksen jälkeen
+                        handleDialogClose(); // Sulkee dialogin
+                    } else {
+                        alert("Asiakkaan päivitys epäonnistui");
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Päivitys epäonnistui");
                 });
         }
     };
@@ -140,6 +178,49 @@ export default function PersonalTrainer() {
                     onClose={() => setOpenSnackbar(false)}
                 />
             </div>
+
+            {/* Muokkausdialogi */}
+            <Dialog open={openDialog} onClose={handleDialogClose}>
+                <DialogTitle>Muokkaa asiakasta</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        label="Etunimi"
+                        value={editCustomer ? editCustomer.firstname : ''}
+                        onChange={(e) => setEditCustomer({ ...editCustomer, firstname: e.target.value })}
+                        fullWidth
+                        margin="normal"
+                    />
+                    <TextField
+                        label="Sukunimi"
+                        value={editCustomer ? editCustomer.lastname : ''}
+                        onChange={(e) => setEditCustomer({ ...editCustomer, lastname: e.target.value })}
+                        fullWidth
+                        margin="normal"
+                    />
+                    <TextField
+                        label="Sähköposti"
+                        value={editCustomer ? editCustomer.email : ''}
+                        onChange={(e) => setEditCustomer({ ...editCustomer, email: e.target.value })}
+                        fullWidth
+                        margin="normal"
+                    />
+                    <TextField
+                        label="Puhelinnumero"
+                        value={editCustomer ? editCustomer.phone : ''}
+                        onChange={(e) => setEditCustomer({ ...editCustomer, phone: e.target.value })}
+                        fullWidth
+                        margin="normal"
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleDialogClose} color="secondary">
+                        Peruuta
+                    </Button>
+                    <Button onClick={handleSave} color="primary">
+                        Tallenna
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </>
     );
 }
