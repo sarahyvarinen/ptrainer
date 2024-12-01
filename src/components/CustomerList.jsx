@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-material.css";
-import { Snackbar, Tabs, Tab, Box } from "@mui/material";
+import { Snackbar, Tabs, Tab, Box, Button } from "@mui/material";
 
 export default function PersonalTrainer() {
 
@@ -16,12 +16,30 @@ export default function PersonalTrainer() {
         { field: 'firstname' },
         { field: 'lastname' },
         { field: 'email' },
-        { field: 'phone' }
+        { field: 'phone' },
+        {
+            headerName: "Toiminnot", 
+            field: "actions",
+            // Käytämme cellRendereriä ja palautamme buttonin renderöitäväksi soluun
+            cellRenderer: (params) => {
+                return (
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={() => handleDelete(params.data._links.self.href)}
+                    >
+                        Poista
+                    </Button>
+                );
+            },
+            suppressFiltersToolPanel: true,  // Estää suodattimen työkalupaneelin
+            suppressSorting: true,  // Estää lajittelua
+        }
     ]);
 
     const [trainingColDefs, setTrainingColDefs] = useState([
-        { field: 'customer.firstname', headerName: 'First Name' }, // Asiakkaan etunimi
-        { field: 'customer.lastname', headerName: 'Last Name' },   // Asiakkaan sukunimi
+        { field: 'customer.firstname', headerName: 'First Name' },
+        { field: 'customer.lastname', headerName: 'Last Name' },
         { field: 'duration', headerName: 'Duration' },
         { field: 'activity', headerName: 'Activity' },
         { field: 'date', headerName: 'Date' }
@@ -42,10 +60,26 @@ export default function PersonalTrainer() {
     const getTrainings = () => {
         fetch('https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/gettrainings')
             .then(response => response.json())
-            .then(data => setTrainings(data))  
+            .then(data => setTrainings(data))
             .catch(() => {
                 setOpenSnackbar(true);
                 setMsg("Harjoitusten haku epäonnistui, yritä uudelleen");
+            });
+    };
+
+    // Funktio asiakkaan poistamiseen
+    const handleDelete = (customerUrl) => {
+        fetch(customerUrl, { method: 'DELETE' })
+            .then(response => {
+                if (response.ok) {
+                    getCustomers();  // Päivittää asiakaslistan poiston jälkeen
+                } else {
+                    alert("Asiakkaan poisto epäonnistui");
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Poisto epäonnistui");
             });
     };
 
@@ -80,6 +114,7 @@ export default function PersonalTrainer() {
                             columnDefs={customerColDefs}
                             pagination={true}
                             paginationPageSize={5}
+                            domLayout="autoHeight"
                         />
                     </>
                 )}

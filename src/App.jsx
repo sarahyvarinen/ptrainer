@@ -4,23 +4,34 @@ import TrainingList from './components/TrainingList'; // Harjoitukset-sivu
 import AddCustomer from './components/AddCustomer'; // Lisää asiakas -sivu
 
 const App = () => {
-  const [currentPage, setCurrentPage] = useState('customers'); // Näytettävä sivu
+    const [currentPage, setCurrentPage] = useState('customers'); // Näytettävä sivu
 
-  return (
-    <div>
-      <h1>Personal Trainer App</h1>
+    const getCustomers = () => {
+        // Asiakaslistan hakulogiikka
+    };
 
-      {/* Navigointi*/}
-      <div>
-        <button onClick={() => setCurrentPage('addCustomer')}>Lisää asiakas</button>
-      </div>
+    return (
+        <div>
+            <h1>Personal Trainer App</h1>
 
-      {/*Sivut renderöityy*/}
-      {currentPage === 'customers' && <CustomerList />}
-      {currentPage === 'trainings' && <TrainingList />}
-      {currentPage === 'addCustomer' && <AddCustomer />}
-    </div>
-  );
+            {/* Navigointi */}
+            <div>
+                <button onClick={() => setCurrentPage('customers')}>Asiakkaat</button>
+                <button onClick={() => setCurrentPage('trainings')}>Harjoitukset</button>
+                <button onClick={() => setCurrentPage('addCustomer')}>Lisää asiakas</button>
+            </div>
+
+            {/* Sivujen renderöinti */}
+            {currentPage === 'customers' && <CustomerList />}
+            {currentPage === 'trainings' && <TrainingList />}
+            {currentPage === 'addCustomer' && (
+                <AddCustomer 
+                    getCustomers={getCustomers} 
+                    navigateToCustomers={() => setCurrentPage('customers')} 
+                />
+            )}
+        </div>
+    );
 };
 
 export default App;
