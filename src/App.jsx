@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import CustomerList from './components/CustomerList'; // Asiakkaat-sivu
 import TrainingList from './components/TrainingList'; // Harjoitukset-sivu
 import AddCustomer from './components/AddCustomer'; // Lisää asiakas -sivu
+import TrainingCalendar from './components/TrainingCalendar'; // Kalenteri-sivu
 
 const App = () => {
     const [currentPage, setCurrentPage] = useState('customers'); // Näytettävä sivu
@@ -19,6 +20,7 @@ const App = () => {
                 <button onClick={() => setCurrentPage('customers')}>Asiakkaat</button>
                 <button onClick={() => setCurrentPage('trainings')}>Harjoitukset</button>
                 <button onClick={() => setCurrentPage('addCustomer')}>Lisää asiakas</button>
+                <button onClick={() => setCurrentPage('calendar')}>Kalenteri</button>
             </div>
 
             {/* Sivujen renderöinti */}
@@ -30,6 +32,7 @@ const App = () => {
                     navigateToCustomers={() => setCurrentPage('customers')} 
                 />
             )}
+            {currentPage === 'calendar' && <TrainingCalendar />} {/* Kalenteri renderöidään */}
         </div>
     );
 };

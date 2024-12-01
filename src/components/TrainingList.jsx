@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 const TrainingList = () => {
   const [trainings, setTrainings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null); // Virhetilan hallinta
 
   // Sarakeasetukset DataGridille
   const columns = [
@@ -17,6 +18,8 @@ const TrainingList = () => {
   // Hakee datan fetchillä
   useEffect(() => {
     const fetchTrainings = async () => {
+      setLoading(true);
+      setError(null); // Nollaa virhetilan ennen uuden pyynnön tekemistä
       try {
         const response = await fetch("https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/gettrainings");
         if (!response.ok) {
@@ -36,6 +39,7 @@ const TrainingList = () => {
         setTrainings(formattedData);
       } catch (error) {
         console.error("Virhe dataa haettaessa:", error);
+        setError("Tietojen lataaminen epäonnistui. Yritä myöhemmin uudelleen.");
       } finally {
         setLoading(false);
       }
@@ -47,7 +51,14 @@ const TrainingList = () => {
   return (
     <div style={{ height: 500, width: "100%" }}>
       <h2>Harjoitukset</h2>
-      <DataGrid rows={trainings} columns={columns} loading={loading} />
+      {error && <div style={{ color: "red", marginBottom: "20px" }}>{error}</div>} {/* Virheviesti */}
+      <DataGrid
+        rows={trainings}
+        columns={columns}
+        pageSize={5} // Voit määrittää rivejä per sivu
+        loading={loading}
+        rowsPerPageOptions={[5, 10, 20]} // Sivutuksen vaihtoehdot
+      />
     </div>
   );
 };
