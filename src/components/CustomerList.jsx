@@ -69,18 +69,22 @@ export default function PersonalTrainer() {
 
     // Funktio asiakkaan poistamiseen
     const handleDelete = (customerUrl) => {
-        fetch(customerUrl, { method: 'DELETE' })
-            .then(response => {
-                if (response.ok) {
-                    getCustomers();  // Päivittää asiakaslistan poiston jälkeen
-                } else {
-                    alert("Asiakkaan poisto epäonnistui");
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                alert("Poisto epäonnistui");
-            });
+        // Näyttää vahvistusdialogin
+        const isConfirmed = window.confirm("Oletko varma, että haluat poistaa tämän asiakkaan?");
+        if (isConfirmed) {
+            fetch(customerUrl, { method: 'DELETE' })
+                .then(response => {
+                    if (response.ok) {
+                        getCustomers();  // Päivittää asiakaslistan poiston jälkeen
+                    } else {
+                        alert("Asiakkaan poisto epäonnistui");
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Poisto epäonnistui");
+                });
+        }
     };
 
     const handleTabChange = (event, newIndex) => {
