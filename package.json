@@ -23,6 +23,7 @@
     "ag-grid-react": "^32.3.3",
     "date-fns": "^2.30.0",
     "dayjs": "^1.11.13",
+    "papaparse": "^5.4.1",
     "ptrainer": "file:",
     "react": "^18.3.1",
     "react-big-calendar": "^1.16.3",

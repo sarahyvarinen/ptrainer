@@ -3,6 +3,7 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-material.css";
 import { Snackbar, Tabs, Tab, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
+import Papa from "papaparse";  // Tuodaan papaparse CSV-vientiin
 
 export default function PersonalTrainer() {
     const [customers, setCustomers] = useState([]);
@@ -54,6 +55,7 @@ export default function PersonalTrainer() {
         { field: 'date', headerName: 'Date' }
     ]);
 
+    // Asiakkaiden hakeminen
     const getCustomers = () => {
         fetch('https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/customers')
             .then(response => response.json())
@@ -64,6 +66,7 @@ export default function PersonalTrainer() {
             });
     };
 
+    // Harjoitusten hakeminen
     const getTrainings = () => {
         fetch('https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/gettrainings')
             .then(response => response.json())
@@ -74,6 +77,7 @@ export default function PersonalTrainer() {
             });
     };
 
+    // Asiakkaan poisto
     const handleDelete = (customerUrl) => {
         if (window.confirm("Oletko varma, että haluat poistaa tämän asiakkaan?")) {
             fetch(customerUrl, { method: 'DELETE' })
@@ -91,6 +95,7 @@ export default function PersonalTrainer() {
         }
     };
 
+    // Avaa muokkausdialogi
     const openEditDialog = (customerData) => {
         setEditCustomer(customerData); // Asettaa muokattavan asiakkaan tiedot
         setOpenDialog(true); // Avaa dialogin
@@ -101,8 +106,8 @@ export default function PersonalTrainer() {
         setEditCustomer(null); // Tyhjentää muokattavan asiakkaan tiedot
     };
 
+    // Tallenna asiakas
     const handleSave = () => {
-        // Lähetä muokatut tiedot palvelimelle (esimerkiksi PUT-pyyntö)
         if (editCustomer) {
             const updatedCustomer = { ...editCustomer };
             fetch(editCustomer._links.self.href, {
@@ -125,8 +130,30 @@ export default function PersonalTrainer() {
         }
     };
 
+    // Tab-valinta
     const handleTabChange = (event, newIndex) => {
         setTabIndex(newIndex);
+    };
+
+    // CSV-vienti
+    const exportToCSV = () => {
+        // Muodostetaan asiakastiedot CSV:ksi
+        const formattedData = customers.map((customer) => ({
+            etunimi: customer.firstname,
+            sukunimi: customer.lastname,
+            sahkoposti: customer.email,
+            puhelinnumero: customer.phone,
+        }));
+
+        // Käytetään PapaParse:ia tiedoston luomiseen
+        const csv = Papa.unparse(formattedData);
+
+        // Luodaan linkki ja ladataan tiedosto
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'asiakastiedot.csv';
+        link.click();
     };
 
     useEffect(() => {
@@ -147,6 +174,12 @@ export default function PersonalTrainer() {
                     <Tab label="Harjoitukset" />
                 </Tabs>
             </Box>
+
+            {/* CSV-vienti-painike */}
+            <Button variant="contained" color="primary" onClick={exportToCSV} style={{ marginBottom: '20px' }}>
+                Vie asiakastiedot CSV:ksi
+            </Button>
+
             <div className="ag-theme-material" style={{ width: 900, height: 400 }}>
                 {tabIndex === 0 && (
                     <>
